@@ -308,27 +308,11 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       return
     }
 
-    /*val businessTypeParams = null
-    when (businessType) {
-      "Company" -> {
-        promise.resolve(createError(CreateTokenErrorType.Failed.toString(), "Company businessType is not implemented yet"))
-        return
-      }
-      "Individual" -> {
-      }
-      else -> {
-        promise.resolve(createError(CreateTokenErrorType.Failed.toString(), "$businessType businessType is not supported yet"))
-        return
-      }
-    }*/
-
-    val individualData = getMapOrNull(params, "individual")
+    val companyData = getMapOrNull(params, "company")
     val accountParams = AccountParams.create(
       tosShownAndAccepted = getBooleanOrFalse(params, "tosShownAndAccepted"),
-      individual = AccountParams.BusinessTypeParams.Individual.Builder()
-        .setFirstName(getValOr(individualData, "firstName", null))
-        .setLastName(getValOr(individualData, "lastName", null))
-        .setEmail(getValOr(individualData, "email", null))
+      company = AccountParams.BusinessTypeParams.Company.Builder()
+        .setPhone(getValOr(companyData, "phone", null))
         .build()
     )
     CoroutineScope(Dispatchers.IO).launch {
