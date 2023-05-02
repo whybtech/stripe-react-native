@@ -589,6 +589,8 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
             createTokenFromCard(params: params, resolver: resolve, rejecter: reject)
         case "Pii":
             createTokenFromPii(params: params, resolver: resolve, rejecter: reject)
+        case "Account":
+            createTokenFromAccount(params: params, resolver: resolve, rejecter: reject)
         default:
             resolve(Errors.createError(ErrorType.Failed, type + " type is not supported yet"))
         }
@@ -669,6 +671,31 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
         cardSourceParams.currency = params["currency"] as? String
 
         STPAPIClient.shared.createToken(withCard: cardSourceParams) { token, error in
+            if let token = token {
+                resolve(Mappers.createResult("token", Mappers.mapFromToken(token: token)))
+            } else {
+                resolve(Errors.createError(ErrorType.Failed, error as NSError?))
+            }
+        }
+    }
+
+    func createTokenFromBankAccount(
+        params: NSDictionary,
+        resolver resolve: @escaping RCTPromiseResolveBlock,
+        rejecter reject: @escaping RCTPromiseRejectBlock
+    ) -> Void {
+        let businessType = params["businessType"] as? String
+        if (businessType != "Company") {
+            resolve(Errors.createError(ErrorType.Failed, "businessType currently only accepts the Company account type."))
+            return
+        }
+
+        let phone = params["phone"] as? String
+
+        let connectAccountCompanyParams = STPConnectAccountCompanyParams()
+        bankAccountParams.phone = phone
+
+        STPAPIClient.shared.createToken(withConnectAccount: bankAccountParams) { token, error in
             if let token = token {
                 resolve(Mappers.createResult("token", Mappers.mapFromToken(token: token)))
             } else {

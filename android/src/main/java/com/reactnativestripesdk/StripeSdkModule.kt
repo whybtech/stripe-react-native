@@ -303,8 +303,8 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 
   private fun createTokenFromAccount(params: ReadableMap, promise: Promise) {
     val businessType = getValOr(params, "businessType", null)
-    if (businessType == null) {
-      promise.resolve(createError(CreateTokenErrorType.Failed.toString(), "You must provide businessType"))
+    if (businessType != "Company") {
+      promise.resolve(createError(CreateTokenErrorType.Failed.toString(), "businessType currently only accepts the Company account type"))
       return
     }
 
