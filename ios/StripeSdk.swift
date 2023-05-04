@@ -690,12 +690,18 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
             return
         }
 
+        let tosShownAndAccepted = params["tosShownAndAccepted"] as? Bool
         let phone = params["phone"] as? String
 
         let connectAccountCompanyParams = STPConnectAccountCompanyParams()
         connectAccountCompanyParams.phone = phone
 
-        STPAPIClient.shared.createToken(withConnectAccount: connectAccountCompanyParams) { token, error in
+        guard let accountParams = STPConnectAccountParams(tosShownAndAccepted: tosShownAndAccepted, company: companyParams) else {
+            resolve(Errors.createError(ErrorType.Failed, "tosShownAndAccepted parameter must be true"))
+            return
+        }
+
+        STPAPIClient.shared.createToken(withConnectAccount: accountParams) { token, error in
             if let token = token {
                 resolve(Mappers.createResult("token", Mappers.mapFromToken(token: token)))
             } else {
