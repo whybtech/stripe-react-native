@@ -690,7 +690,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
             return
         }
 
-        let tosShownAndAccepted = params["tosShownAndAccepted"] as? Bool
+        let tosShownAndAccepted = params["tosShownAndAccepted"] as? Bool ?? false
         let phone = params["phone"] as? String
 
         let connectAccountCompanyParams = STPConnectAccountCompanyParams()
