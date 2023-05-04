@@ -330,16 +330,6 @@ class Mappers {
         return nil
     }
 
-    class func mapToBusinessType(type: String?) -> STPBusinessType? {
-        if let type = type {
-            switch type {
-            case "Individual": return STPBusinessType.card
-            default: return STPBusinessType.unknown
-            }
-        }
-        return nil
-    }
-
     class func mapCaptureMethod(_ captureMethod: STPPaymentIntentCaptureMethod?) -> String {
         if let captureMethod = captureMethod {
             switch captureMethod {

@@ -679,7 +679,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
         }
     }
 
-    func createTokenFromBankAccount(
+    func createTokenFromAccount(
         params: NSDictionary,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock
@@ -693,9 +693,9 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
         let phone = params["phone"] as? String
 
         let connectAccountCompanyParams = STPConnectAccountCompanyParams()
-        bankAccountParams.phone = phone
+        connectAccountCompanyParams.phone = phone
 
-        STPAPIClient.shared.createToken(withConnectAccount: bankAccountParams) { token, error in
+        STPAPIClient.shared.createToken(withConnectAccount: connectAccountCompanyParams) { token, error in
             if let token = token {
                 resolve(Mappers.createResult("token", Mappers.mapFromToken(token: token)))
             } else {
