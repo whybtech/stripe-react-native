@@ -366,6 +366,7 @@ class StripeSdkModule(
       "Pii" -> {
         createTokenFromPii(params, promise)
       }
+
       "Account" -> {
         createTokenFromAccount(params, promise)
       }
@@ -388,9 +389,9 @@ class StripeSdkModule(
       return
     }
 
-    val individualData = getMapOrNull(params, "individual")
+    val individualData = params.getMap("individual")
     val accountParams = AccountParams.create(
-      tosShownAndAccepted = getBooleanOrFalse(params, "tosShownAndAccepted"),
+      tosShownAndAccepted = params.getBooleanOr("tosShownAndAccepted", false),
       individual = AccountParams.BusinessTypeParams.Individual(
         email = getValOr(individualData, "email", null),
         phone = getValOr(individualData, "phone", null)
