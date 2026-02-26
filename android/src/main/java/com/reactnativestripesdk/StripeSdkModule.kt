@@ -366,6 +366,9 @@ class StripeSdkModule(
       "Pii" -> {
         createTokenFromPii(params, promise)
       }
+      "Account" -> {
+        createTokenFromAccount(params, promise)
+      }
 
       else -> {
         promise.resolve(
@@ -374,6 +377,31 @@ class StripeSdkModule(
             "$type type is not supported yet",
           ),
         )
+      }
+    }
+  }
+
+  private fun createTokenFromAccount(params: ReadableMap, promise: Promise) {
+    val businessType = getValOr(params, "businessType", null)
+    if (businessType != "Individual") {
+      promise.resolve(createError(CreateTokenErrorType.Failed.toString(), "businessType currently only accepts the Individual account type"))
+      return
+    }
+
+    val individualData = getMapOrNull(params, "individual")
+    val accountParams = AccountParams.create(
+      tosShownAndAccepted = getBooleanOrFalse(params, "tosShownAndAccepted"),
+      individual = AccountParams.BusinessTypeParams.Individual(
+        email = getValOr(individualData, "email", null),
+        phone = getValOr(individualData, "phone", null)
+      )
+    )
+    CoroutineScope(Dispatchers.IO).launch {
+      runCatching {
+        val token = stripe.createAccountToken(accountParams, null, stripeAccountId)
+        promise.resolve(createResult("token", mapFromToken(token)))
+      }.onFailure {
+        promise.resolve(createError(CreateTokenErrorType.Failed.toString(), it.message))
       }
     }
   }
